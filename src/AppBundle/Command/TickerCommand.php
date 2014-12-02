@@ -1,12 +1,5 @@
 <?php
-/*
- * This file is part of the Mundoreader Symfony Base package.
- *
- * (c) Mundo Reader S.L.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+
 
 namespace AppBundle\Command;
 
@@ -19,9 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  * 
  * @category SymfonyBundle
  * @package  AppBundle\Command
- * @author   Jesús Flores <jesus.flores@bq.com>
+ * @author   Jesús Flores <jesusfloressanjose@gmail.com>
  * @license  http://opensource.org/licenses/GPL-3.0 GNU General Public License
- * @link     http://bq.com
+
  */
 class TickerCommand extends ContainerAwareCommand
 {

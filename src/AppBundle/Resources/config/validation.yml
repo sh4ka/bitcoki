@@ -1,0 +1,3 @@
+AppBundle\Entity\Alert:
+    constraints:
+        - AppBundle\Validator\Constraints\MinMax: ~

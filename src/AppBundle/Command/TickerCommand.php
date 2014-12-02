@@ -31,7 +31,6 @@ class TickerCommand extends ContainerAwareCommand
 
     protected function configure()
     {
-
         $this
             ->setName('api:ticker')
             ->setDescription('Get fresh ticker data from blockchain.info')
@@ -42,7 +41,41 @@ class TickerCommand extends ContainerAwareCommand
     {
         $this->logger = $this->getContainer()->get('logger');
         $this->em = $this->getContainer()->get('doctrine')->getManager();
-        var_dump($this->fetchApiData());
+        $this->processTickAlerts($this->fetchApiData());
+    }
+
+    protected function processTickAlerts($tickData){
+        $alerts = $this->em->getRepository('AppBundle:Alert')->findAll();
+        $currentLast = $tickData['USD']['last'];
+        foreach($alerts as $alert){
+            if($alert->getMin() > $currentLast){
+                $this->getContainer()->get('mailer')->send($this->getLowMsg($alert, $currentLast));
+            } elseif($alert->getMax() < $currentLast){
+                $this->getContainer()->get('mailer')->send($this->getHighMsg($alert, $currentLast));
+            }
+        }
+    }
+
+    protected function getLowMsg($alert, $current){
+        return \Swift_Message::newInstance()
+            ->setSubject('Bitcoki Alert')
+            ->setFrom($this->getContainer()->getParameter('alert_mail_from'))
+            ->setTo($alert->getEmail())
+            ->setBody(
+                'Current bitcoin price of '.$current.' USD is lower than your alert.'
+            )
+        ;
+    }
+
+    protected function getHighMsg($alert, $current){
+        return \Swift_Message::newInstance()
+            ->setSubject('Bitcoki Alert')
+            ->setFrom($this->getContainer()->getParameter('alert_mail_from'))
+            ->setTo($alert->getEmail())
+            ->setBody(
+                'Current bitcoin price of '.$current.' USD is higher than your alert.'
+            )
+        ;
     }
 
     protected function fetchApiData(){

@@ -3,6 +3,7 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\Tick;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,13 +39,24 @@ class TickerCommand extends ContainerAwareCommand
     }
 
     protected function processTickAlerts($tickData){
-        $alerts = $this->em->getRepository('AppBundle:Alert')->findAll();
+        $alerts = $this->em->getRepository('AppBundle:Alert')->findBy(['enabled' => true]);
         $currentLast = $tickData['USD']['last'];
+        $tick = new Tick();
+        $tick->setDate(new \DateTime());
+        $tick->setValue($currentLast);
+        $this->em->persist($tick);
+        $this->em->flush();
         foreach($alerts as $alert){
             if($alert->getMin() > $currentLast){
                 $this->getContainer()->get('mailer')->send($this->getLowMsg($alert, $currentLast));
+                $alert->setEnabled(false);
+                $this->em->persist($alert);
+                $this->em->flush();
             } elseif($alert->getMax() < $currentLast){
                 $this->getContainer()->get('mailer')->send($this->getHighMsg($alert, $currentLast));
+                $alert->setEnabled(false);
+                $this->em->persist($alert);
+                $this->em->flush();
             }
         }
     }
@@ -55,7 +67,9 @@ class TickerCommand extends ContainerAwareCommand
             ->setFrom($this->getContainer()->getParameter('alert_mail_from'))
             ->setTo($alert->getEmail())
             ->setBody(
-                'Current bitcoin price of '.$current.' USD is lower than your alert.'
+                'Current bitcoin price of '.$current.
+                ' USD is lower than your alert. This alert is now deleted, you can recreate it by clicking this link '.
+                $alert->getHash()
             )
         ;
     }
@@ -66,7 +80,9 @@ class TickerCommand extends ContainerAwareCommand
             ->setFrom($this->getContainer()->getParameter('alert_mail_from'))
             ->setTo($alert->getEmail())
             ->setBody(
-                'Current bitcoin price of '.$current.' USD is higher than your alert.'
+                'Current bitcoin price of '.$current.
+                ' USD is higher than your alert. This alert is now deleted, you can recreate it by clicking this link '.
+                $alert->getHash()
             )
         ;
     }

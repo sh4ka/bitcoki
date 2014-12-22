@@ -29,6 +29,15 @@ class Alert
      */
     private $max;
 
+    /**
+     * @var float
+     */
+    private $hash;
+
+    /**
+     * @var boolean
+     */
+    private $enabled;
 
     /**
      * Get id
@@ -108,4 +117,52 @@ class Alert
     {
         return $this->max;
     }
+
+    /**
+     * <description>
+     *
+     * @param float $hash <param_description>
+     *
+     * @return $this
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+        return $this;
+    }
+
+    /**
+     * <description>
+     *
+     * @return float
+     */
+    public function getHash(){
+        return $this->hash;
+    }
+
+    /**
+     * <description>
+     *
+     * @param boolean $enabled <param_description>
+     *
+     * @return $this
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+        return $this;
+    }
+
+    /**
+     * <description>
+     *
+     * @return boolean
+     */
+    public function getEnabled(){
+        return $this->enabled;
+    }
+
+
+
+
 }

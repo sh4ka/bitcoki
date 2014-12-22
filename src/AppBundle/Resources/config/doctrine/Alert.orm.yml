@@ -15,4 +15,9 @@ AppBundle\Entity\Alert:
             type: float
         max:
             type: float
+        hash:
+            type: string
+            length: 32
+        enabled:
+            type: boolean
     lifecycleCallbacks: {  }

@@ -1,0 +1,17 @@
+AppBundle\Entity\Tick:
+    type: entity
+    repositoryClass: AppBundle\Repository\TickRepository
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        date:
+            type: datetimetz
+        value:
+            type: decimal
+            scale: 2
+    lifecycleCallbacks: {  }
